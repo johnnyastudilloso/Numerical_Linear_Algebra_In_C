@@ -1,33 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-/* #include <../Ejercicio1/linalg.c> */
-
-/*
- * INPUT: m = rows, n = columns, a = matrix, tol = tolerance
- *
- * OUTPUT: 0 if solved, 1 if not could solve it
- */
-int elimgauss(int m, int n, double **a, double tol)
-{
-    int i, j, k;
-    float div;
-
-    for(i = 0; i < m; i++)
-    {
-        for(j = 0; j < m - 1; j++)
-        {
-            if(j > i)
-            {
-                div = a[j][i] / a[i][i];
-                for(k = 0; k < m; k++)
-                {
-                    a[j][k] = a[j][k] - div * a[i][k];
-                }
-            }
-        }
-    }
-}
+#include <../Ejercicio1/linalg.c>
 
 int main(void)
 {
@@ -40,9 +14,10 @@ int main(void)
     char file_name[20];
 
     /* Matrix */
-    double **a, *b;
+    double **a, *b, *x;
     int n;
 
+    /* Abrimos el fichero */
     printf("\nIntroduce el nombre del fichero: ");
     scanf("%s", file_name);
 
@@ -53,8 +28,8 @@ int main(void)
         return 1;
     }
 
-    /*Solicitamos las dimensiones de la matriz y el vector */
-    printf("\nIntroduce las dimensiones de la matriz (n x n): ");
+    /* Solicitamos las dimensiones de la matriz y el vector */
+    printf("\nIntroduce las dimensiones de la matriz A (n x n): ");
     k = fscanf(file, "%d", &n);
     printf("%d", n);
 
@@ -62,7 +37,7 @@ int main(void)
     a = (double **) malloc(n * sizeof(double *));
     if(a == NULL)
     {
-        printf("\nNo hay suficiente espacio en memoria para la matriz");
+        printf("\nNo hay suficiente espacio en memoria para la matriz A");
         return 2;
     }
 
@@ -71,21 +46,29 @@ int main(void)
         a[i] = (double *) malloc(n * sizeof(double));
         if(a[i] == NULL)
         {
-            printf("\nNo hay suficiente espacio en memoria para la matriz");
+            printf("\nNo hay suficiente espacio en memoria para la matriz A");
             return 2;
         }
     }
 
-    /* Reservamos espacio en memoria para el vector */
+    /* Reservamos espacio en memoria para el vector b */
     b = (double *) malloc(n * sizeof(double));
     if(b == NULL)
     {
-        printf("\nNo hay suficiente espacio en memoria para el vector");
+        printf("\nNo hay suficiente espacio en memoria para el vector b");
         return 3;
     }
 
-    /* Llenamos la matriz */
-    printf("\n\nLeyendo matriz...");
+    /* Reservamos espacio para el vector x */
+    x = (double *) malloc(n * sizeof(double));
+    if(x == NULL)
+    {
+        printf("\nNo hay suficiente espacio en memoria para el vecto x");
+        return 4;
+    }
+
+    /* Llenamos la matriz y la mostramos */
+    printf("\n\nMatriz A:");
 
     for(i = 0; i < n; i++)
     {
@@ -93,12 +76,12 @@ int main(void)
         for(j = 0; j < n; j++)
         {
             k = fscanf(file, "%lf", &a[i][j]);
-            printf("%lf ", a[i][j]);
+            printf("%.15lf ", a[i][j]);
         }
         printf("]");
     }
 
-    printf("\n\nLeyendo vector...\n[ ");
+    printf("\n\nVector b:\n[ ");
     for(i = 0; i < n; i++)
     {
         k = fscanf(file, "%lf", &b[i]);
@@ -106,11 +89,14 @@ int main(void)
     }
     printf("]");
 
-    printf("\n\nIntroduce el valor de la tolerancia: ");
+    printf("\n\nTolerancia: ");
     k = fscanf(file, "%lf", &tol);
     printf("%lf", tol);
 
-    printf("\n\nAplicando eliminacion gaussiana...");
+    flcose(file);
+
+    /* Aplicamos la eliminación gaussiana al sistema */
+    printf("\n\n- Aplicando eliminación Gaussiana -\nMatriz A:");
     elimgauss(n, n + 1, a, tol);
 
     /* Mostramos la matriz */
@@ -123,5 +109,25 @@ int main(void)
         }
         printf("]");
     }
+
+    printf("\n\n- Resolviendo sistema -");
+    resoltrisup(n, n + 1, a, x, tol);
+
+    /* Mostramos el vector x */
+    printf("\n\nVector x:\n[ ")
+    for(i = 0; i < n; i++)
+    {
+        printf("%lf ", x[i]);
+    }
+    printf("]");
+
+    free(b);
+
+    for(i = 0; i < n; i++)
+    {
+        free(a[i]);
+    }
+    free(a);
+
     return 0;
 }

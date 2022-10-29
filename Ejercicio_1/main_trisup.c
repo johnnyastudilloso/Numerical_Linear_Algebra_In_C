@@ -21,7 +21,6 @@ int main(void)
     scanf("%s", file_name);
 
     entrada = fopen(file_name, "r");
-
     if(entrada == NULL)
     {
         printf (" Error al abrir el fitxer %s\n" , file_name);
@@ -69,34 +68,22 @@ int main(void)
         return 5;
     }
 
-    /* Llenamos la matriz */
+    /* Llenamos la matriz y la mostramos */
+    printf("\n\nMatrix A:");
 
     for(i = 0; i < m; i++)
     {
-        printf("\nLeyendo fila nº %d:\n", i);
-        printf("-----------------------------------------\n");
+        printf("\n[ ");
         for(j = 0; j < n; j++)
         {
-            printf("\nLeyendo columna nº %d: ", j);
             k = fscanf(entrada, "%lf", &a[i][j]);
             printf("%.15f ", a[i][j]);
         }
-    }
-
-    /* Mostramos la matriz creada */
-    printf("\n\nMatriz creada:\n");
-    printf("----------------");
-    for(i = 0; i < m; i++)
-    {
-        printf("\n");
-        for(j = 0; j < n; j++)
-        {
-            printf(" %lf", a[i][j]);
-        }
+        printf("]");
     }
 
     /* Leemos la tolerancia */
-    printf("\n\nIntroduce el valor de la tolerancia: ");
+    printf("\n\nTolerancia: ");
     k = fscanf(entrada, "%lf", &tol);
     printf("%e", tol);
 
