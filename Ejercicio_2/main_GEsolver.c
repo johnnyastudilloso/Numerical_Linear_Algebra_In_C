@@ -131,16 +131,16 @@ int main(void)
     fclose(file);
 
     /* Aplicamos la eliminación gaussiana al sistema */
-    printf("\n\n- Aplicando eliminación Gaussiana -\n\nMatriz A:");
-    elimgauss(n, n + 1, a, tol);
+    printf("\n\n- Aplicando eliminación Gaussiana -\n\nMatriz A|B:");
+    elimgauss(n, n + 1, ab, tol);
 
-    /* Mostramos la matriz */
+    /* Mostramos la matriz ampliada*/
     for(i = 0; i < n; i++)
     {
         printf("\n[ ");
-        for(j = 0; j < n; j++)
+        for(j = 0; j < n + 1; j++)
         {
-            printf("%lf ", a[i][j]);
+            printf("%lf ", ab[i][j]);
         }
         printf("]");
     }
@@ -154,7 +154,7 @@ int main(void)
     printf("]");
 
     printf("\n\n- Resolviendo sistema -");
-    resoltrisup(n, n + 1, a, x, tol);
+    resoltrisup(n, n + 1, ab, x, tol);
 
     /* Mostramos el vector x */
     printf("\n\nVector x:\n[ ");
@@ -165,12 +165,15 @@ int main(void)
     printf("]");
 
     free(b);
+    free(x);
 
     for(i = 0; i < n; i++)
     {
         free(a[i]);
+        free(ab[i]);
     }
     free(a);
+    free(ab);
 
     return 0;
 }

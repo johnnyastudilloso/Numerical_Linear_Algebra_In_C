@@ -82,7 +82,7 @@ int elimgauss(int m, int n, double **a, double tol)
             if(j > i)
             {
                 div = a[j][i] / a[i][i];
-                for(k = 0; k < m; k++)
+                for(k = 0; k < m + 1; k++)
                 {
                     a[j][k] = a[j][k] - div * a[i][k];
                 }
