@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "../dependences/prodMatVec.c"
-#include "../dependences/prod_escalar.c"
-#include "../dependences/linalg.c"
+#include "linalg.c"
 
 int main(void)
 {

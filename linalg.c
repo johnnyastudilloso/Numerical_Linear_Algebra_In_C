@@ -73,6 +73,7 @@ void residu(int m, int n, double **a, double *x, double *r)
 
     prodMatVec(m, n, a, x, r);
 
+
     printf("\nVector Ax: [ ");
     for(i = 0; i < m; i++)
     {
@@ -113,20 +114,32 @@ int elimgauss(int m, int n, double **a, double tol)
 
 int elimgausspiv(int m, int n, double **a, double tol)
 {
-    int i, j, k;
-    float div;
+    int i, j, k, max;
+    double factor;
+    double temp[n];
 
     for(i = 0; i < m; i++)
     {
-        for(j = 0; j < n - 1; j++)
+        max = i;
+        for(j = i + 1; j < m; j++)
         {
-            if(j > i)
+            if(abs(a[j][i]) > abs(a[max][i]))
+                max = i;
+        }
+
+        for(j = i; j < n; j++)
+        {
+            temp[j] = a[i][j];
+            a[i][j] = a[max][j];
+            a[max][j] = temp[j];
+        }
+
+        for(j = i + 1; j < m; j++)
+        {
+            factor = a[j][i] / a[i][i];
+            for(k = 0; k < m + 1; k++)
             {
-                div = a[j][i] / a[i][i];
-                for(k = 0; k < m + 1; k++)
-                {
-                    a[j][k] = a[j][k] - div * a[i][k];
-                }
+                a[j][k] = a[j][k] - factor * a[i][k];
             }
         }
     }

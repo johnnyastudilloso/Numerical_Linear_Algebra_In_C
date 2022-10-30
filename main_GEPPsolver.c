@@ -1,22 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "../dependences/linalg.c"
-#include "../dependences/prod_escalar.c"
-#include "../dependences/prodMatVec.c"
+#include "linalg.c"
 
 int main(void)
 {
     /* Main variables */
     int i, j, k;
-    double tol;
+    double tol, norma;
 
     /* File */
     FILE *file;
     char file_name[20];
 
     /* Matrix */
-    double **a, **ab, *b, *x;
+    double **a, **ab, *b, *x, *r;
     int n;
 
     /* Abrimos el fichero */
@@ -87,6 +85,13 @@ int main(void)
         return 4;
     }
 
+    r = (double *) malloc(n * sizeof(double));
+    if(r == NULL)
+    {
+        printf("\nNo hay suficiente espacio en memoria para el vecto residuo");
+        return 5;
+    }
+
     /* Llenamos la matriz y la mostramos */
     printf("\n\nMatriz A:");
 
@@ -132,9 +137,9 @@ int main(void)
 
     /* Aplicamos la eliminación gaussiana al sistema */
     printf("\n\n- Aplicando eliminación Gaussiana -\n\nMatriz A|B:");
-    elimgauss(n, n + 1, ab, tol);
+    elimgausspiv(n, n + 1, ab, tol);
 
-    /* Mostramos la matriz ampliada */
+    /* Mostramos la matriz ampliada*/
     for(i = 0; i < n; i++)
     {
         printf("\n[ ");
@@ -157,8 +162,20 @@ int main(void)
     }
     printf("]");
 
+    printf("\n\n- Calculando vector residuo -\n");
+    residu(n, n + 1, ab, x, b);
+
+    /* Calculo de la norma 2 del resiudo */
+    printf("\n- Calculando norma 2 del residuo - ");
+
+    norma = prod_esc(n + 1, r, r);
+    norma = sqrt(norma);
+
+    printf("\nNorma: %lf\n", norma);
+
     free(b);
     free(x);
+    free(r);
 
     for(i = 0; i < n; i++)
     {
