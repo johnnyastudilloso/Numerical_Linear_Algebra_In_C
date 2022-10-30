@@ -145,14 +145,7 @@ int main(void)
         printf("]");
     }
 
-    /* Mostramos el vector b */
-    printf("\n\nVector b:\n[ ");
-    for(i = 0; i < n; i++)
-    {
-        printf("%lf ", b[i]);
-    }
-    printf("]");
-
+    /* Resolvemos el sistema */
     printf("\n\n- Resolviendo sistema -");
     resoltrisup(n, n + 1, ab, x, tol);
 

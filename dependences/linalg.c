@@ -90,3 +90,24 @@ int elimgauss(int m, int n, double **a, double tol)
         }
     }
 }
+
+int elimgausspiv(int m, int n, double **a, double tol)
+{
+    int i, j, k;
+    float div;
+
+    for(i = 0; i < m; i++)
+    {
+        for(j = 0; j < n - 1; j++)
+        {
+            if(j > i)
+            {
+                div = a[j][i] / a[i][i];
+                for(k = 0; k < m + 1; k++)
+                {
+                    a[j][k] = a[j][k] - div * a[i][k];
+                }
+            }
+        }
+    }
+}
