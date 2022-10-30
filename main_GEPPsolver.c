@@ -14,7 +14,7 @@ int main(void)
     char file_name[20];
 
     /* Matrix */
-    double **a, **ab, *b, *x, *r;
+    double **a, **ab, *b, *x;
     int n;
 
     /* Abrimos el fichero */
@@ -83,13 +83,6 @@ int main(void)
     {
         printf("\nNo hay suficiente espacio en memoria para el vecto x");
         return 4;
-    }
-
-    r = (double *) malloc(n * sizeof(double));
-    if(r == NULL)
-    {
-        printf("\nNo hay suficiente espacio en memoria para el vecto residuo");
-        return 5;
     }
 
     /* Llenamos la matriz y la mostramos */
@@ -168,14 +161,13 @@ int main(void)
     /* Calculo de la norma 2 del resiudo */
     printf("\n- Calculando norma 2 del residuo - ");
 
-    norma = prod_esc(n + 1, r, r);
+    norma = prod_esc(n + 1, b, b);
     norma = sqrt(norma);
 
     printf("\nNorma: %lf\n", norma);
 
     free(b);
     free(x);
-    free(r);
 
     for(i = 0; i < n; i++)
     {

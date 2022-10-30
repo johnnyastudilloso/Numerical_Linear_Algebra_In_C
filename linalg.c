@@ -27,6 +27,44 @@ void prodMatVec(int m, int n, double **a, double *x, double *r)
     }
 }
 
+double **prodMatMat(int m, int n, int k, double **a, double **b)
+{
+    int i, j, p;
+    double sum;
+    double **c;
+
+    c = (double **) malloc(m * sizeof(double *));
+    if(c == NULL)
+    {
+        printf("No hay espacio en memoria para la matriz C");
+        return NULL;
+    }
+
+    for(i = 0; i < k; i++)
+    {
+        c[i] = (double *) malloc(n * sizeof(double));
+        if(c[i] == NULL)
+        {
+            printf("No hay espacio en memoria para la matriz C");
+            return 1;
+        }
+    }
+
+    for(i = 0; i < n; i++)
+    {
+        for(j = 0; j < m; j++)
+        {
+            sum = 0;
+            for(p = 0; p < k; p++)
+            {
+                sum += a[j][p] * b[p][i];
+            }
+            c[j][i] = sum;
+        }
+    }
+    return c;
+}
+
 /*
  * Resolvemos una matriz a mediante substitución hacia atrás
  */
@@ -100,7 +138,6 @@ int elimgauss(int m, int n, double **a, double tol)
     {
         for(j = i + 1; j < m; j++)
         {
-            printf("%lf ", a[j][i]);
             factor = a[j][i] / a[i][i];
             for(k = i; k < n; k++)
             {
