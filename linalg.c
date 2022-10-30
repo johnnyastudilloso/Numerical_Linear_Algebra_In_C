@@ -94,23 +94,23 @@ void residu(int m, int n, double **a, double *x, double *r)
 int elimgauss(int m, int n, double **a, double tol)
 {
     int i, j, k;
-    float div;
+    double factor;
 
     for(i = 0; i < m; i++)
     {
-        for(j = 0; j < n - 1; j++)
+        for(j = i + 1; j < m; j++)
         {
-            if(j > i)
+            printf("%lf ", a[j][i]);
+            factor = a[j][i] / a[i][i];
+            for(k = i; k < n; k++)
             {
-                div = a[j][i] / a[i][i];
-                for(k = 0; k < m + 1; k++)
-                {
-                    a[j][k] = a[j][k] - div * a[i][k];
-                }
+                a[j][k] = a[j][k] - factor * a[i][k];
             }
+            a[j][i] = factor;
         }
     }
 }
+
 
 int elimgausspiv(int m, int n, double **a, double tol)
 {
@@ -137,10 +137,11 @@ int elimgausspiv(int m, int n, double **a, double tol)
         for(j = i + 1; j < m; j++)
         {
             factor = a[j][i] / a[i][i];
-            for(k = 0; k < m + 1; k++)
+            for(k = i; k < n; k++)
             {
-                a[j][k] = a[j][k] - factor * a[i][k];
+                a[j][k] -= factor * a[i][k];
             }
+            a[j][i] = factor;
         }
     }
 }
