@@ -77,7 +77,7 @@ int elimgauss(int m, int n, double **a, double tol)
 
     for(i = 0; i < m; i++)
     {
-        for(j = 0; j < m - 1; j++)
+        for(j = 0; j < n - 1; j++)
         {
             if(j > i)
             {

@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <../Ejercicio1/linalg.c>
+#include "../dependences/linalg.c"
+#include "../dependences/prod_escalar.c"
+#include "../dependences/prodMatVec.c"
 
 int main(void)
 {
@@ -14,7 +16,7 @@ int main(void)
     char file_name[20];
 
     /* Matrix */
-    double **a, *b, *x;
+    double **a, **ab, *b, *x;
     int n;
 
     /* Abrimos el fichero */
@@ -33,7 +35,7 @@ int main(void)
     k = fscanf(file, "%d", &n);
     printf("%d", n);
 
-    /* Reservamos memoria para la matriz */
+    /* Reservamos memoria para la matriz A*/
     a = (double **) malloc(n * sizeof(double *));
     if(a == NULL)
     {
@@ -45,6 +47,24 @@ int main(void)
     {
         a[i] = (double *) malloc(n * sizeof(double));
         if(a[i] == NULL)
+        {
+            printf("\nNo hay suficiente espacio en memoria para la matriz A");
+            return 2;
+        }
+    }
+
+    /* Reservamos memoria para la matriz  ampliada A|B */
+    ab = (double **) malloc(n * sizeof(double *));
+    if(ab == NULL)
+    {
+        printf("\nNo hay suficiente espacio en memoria para la matriz A");
+        return 2;
+    }
+
+    for(i = 0; i < n; i++)
+    {
+        ab[i] = (double *) malloc((n + 1) * sizeof(double));
+        if(ab[i] == NULL)
         {
             printf("\nNo hay suficiente espacio en memoria para la matriz A");
             return 2;
@@ -76,6 +96,7 @@ int main(void)
         for(j = 0; j < n; j++)
         {
             k = fscanf(file, "%lf", &a[i][j]);
+            ab[i][j] = a[i][j];
             printf("%.15lf ", a[i][j]);
         }
         printf("]");
@@ -85,18 +106,32 @@ int main(void)
     for(i = 0; i < n; i++)
     {
         k = fscanf(file, "%lf", &b[i]);
+        ab[i][n] = b[i];
         printf("%lf ", b[i]);
     }
     printf("]");
 
+    /* Mostramos matriz ampliada */
+    printf("\n\nMatriz ampliada:");
+
+    for(i = 0; i < n; i++)
+    {
+        printf("\n[ ");
+        for(j = 0; j < n + 1; j++)
+        {
+            printf("%.15lf ", ab[i][j]);
+        }
+        printf("]");
+    }
+
     printf("\n\nTolerancia: ");
     k = fscanf(file, "%lf", &tol);
-    printf("%lf", tol);
+    printf("%e", tol);
 
-    flcose(file);
+    fclose(file);
 
     /* Aplicamos la eliminación gaussiana al sistema */
-    printf("\n\n- Aplicando eliminación Gaussiana -\nMatriz A:");
+    printf("\n\n- Aplicando eliminación Gaussiana -\n\nMatriz A:");
     elimgauss(n, n + 1, a, tol);
 
     /* Mostramos la matriz */
@@ -110,11 +145,19 @@ int main(void)
         printf("]");
     }
 
+    /* Mostramos el vector b */
+    printf("\n\nVector b:\n[ ");
+    for(i = 0; i < n; i++)
+    {
+        printf("%lf ", b[i]);
+    }
+    printf("]");
+
     printf("\n\n- Resolviendo sistema -");
     resoltrisup(n, n + 1, a, x, tol);
 
     /* Mostramos el vector x */
-    printf("\n\nVector x:\n[ ")
+    printf("\n\nVector x:\n[ ");
     for(i = 0; i < n; i++)
     {
         printf("%lf ", x[i]);
