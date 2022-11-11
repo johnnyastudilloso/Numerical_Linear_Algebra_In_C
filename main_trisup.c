@@ -5,87 +5,53 @@
 
 int main(void)
 {
-    int i, j, m, n, k;
-    double **a,*x, *r;
-    double tol = 0;
-    double norma;
-
-    /* Fichero */
+    int i, j, k;
     char file_name[20];
-    FILE *entrada;
+    
+    /* Matrix atributes */
+    int m, n;
+    double tol;
+    double norma;
+    double **a, *x, *r;
 
-    /* Abrimos el fichero */
-    printf("Introduce el nombre del fichero:\n");
-    scanf("%s", file_name);
+    /* File */
+    FILE *file;
 
-    entrada = fopen(file_name, "r");
-    if(entrada == NULL)
-    {
-        printf (" Error al abrir el fitxer %s\n" , file_name);
-        return 1;
-    }
+    open_file(&file);
 
-    /*Solicitamos las dimensiones de la matriz y el vector */
-    k = fscanf(entrada, "%d", &m);
-    printf("\nFilas: %d", m);
-    k = fscanf(entrada, "%d", &n);
-    printf("\nColumnas: %d", n);
+    /* Solicitamos las dimensiones de la matriz y el vector */
+    printf("\nRows > ");
+    k = fscanf(file, "%d", &m);
+    printf("%d\n", m);
 
-    /* Reservamos esapcio para la matriz y los vectores necesarios */
-    /* Matriz */
-    a = (double **) malloc(m * sizeof(double *));
-    if(a == NULL)
-    {
-        printf("No hay espacio suficiente en memoria para la matriz");
-        return 2;
-    }
+    printf("\nColumns > ");
+    k = fscanf(file, "%d", &n);
+    printf("%d\n", n);
 
-    for(i = 0; i < n; i++)
-    {
-        a[i] = (double *) malloc(n * sizeof(double));
-        if(a[i] == NULL)
-        {
-            printf("No hay espacio suficiente en memoria para la matriz");
-            return 3;
-        }
-    }
-
-    /* Vector de resultados */
-    x = (double *) malloc(m * sizeof(double));
-    if(x == NULL)
-    {
-        printf("No hay espacio suficiente en memoria para el vector de resultados");
-        return 4;
-    }
-
-    /* Vector residuo */
-    r = (double *) malloc(m * sizeof(double));
-    if(r == NULL)
-    {
-        printf("No hay espacio suficiente en memoria para el vector residuo");
-        return 5;
-    }
+    a = (double **) malloc_matrix(m, n, sizeof(double));
+    x = (double *) malloc_vector(m, sizeof(double));
+    r = (double *) malloc_vector(m, sizeof(double));
 
     /* Llenamos la matriz y la mostramos */
-    printf("\n\nMatrix A:");
+    printf("\nMatrix A:\n");
 
     for(i = 0; i < m; i++)
     {
-        printf("\n[ ");
+        printf("[ ");
         for(j = 0; j < n; j++)
         {
-            k = fscanf(entrada, "%lf", &a[i][j]);
+            k = fscanf(file, "%lf", &a[i][j]);
             printf("%.15f ", a[i][j]);
         }
-        printf("]");
+        printf("]\n");
     }
 
     /* Leemos la tolerancia */
-    printf("\n\nTolerancia: ");
-    k = fscanf(entrada, "%lf", &tol);
-    printf("%e", tol);
+    printf("\nTolerance > ");
+    k = fscanf(file, "%lf", &tol);
+    printf("%e\n", tol);
 
-    fclose(entrada);
+    fclose(file);
 
     /* Resolvemos la matriz */
     k = resoltrisup(m, n, a, x, tol);
@@ -93,7 +59,7 @@ int main(void)
     if(!k)
     {
         /* Mostramos la solución */
-        printf("\n\nSOLUCIÓN: ");
+        printf("\nSOLUTION: ");
         printf("[ ");
         for(i = 0; i < m; i++)
         {
@@ -104,7 +70,7 @@ int main(void)
         residu(m, n, a, x, r);
 
         /* Calculo de la norma 2 del resiudo */
-        printf("\nNorma 2 del residuo: ");
+        printf("\nNorm 2 of the residual vector: ");
 
         norma = prod_esc(m, r, r);
         norma = sqrt(norma);
@@ -116,11 +82,7 @@ int main(void)
     free(x);
     free(r);
 
-    for(i = 0; i < n; i++)
-    {
-        free(a[i]);
-    }
-    free(a);
+    free_matrix((void **) a, m);
 
     return 0;
 }

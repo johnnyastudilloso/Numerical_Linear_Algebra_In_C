@@ -1,3 +1,71 @@
+/* Memory operations */
+void open_file(FILE **file)
+{
+    char file_name[20];
+
+    /* Opening */
+    printf(" File name > ");
+    scanf("%s", file_name);
+
+    *file = fopen(file_name, "r");
+    if(file == NULL)
+    {
+        printf("¡Error loading file!\n");
+        exit(1);
+    }
+}
+
+void **malloc_matrix(int m, int n, size_t size)
+{
+    int i, j;
+    
+    void **matrix;
+
+    /* Reservamos esapcio para la matriz y los vectores necesarios */
+    matrix = (void **) malloc(m * sizeof(void *));
+    if(matrix == NULL)
+    {
+        printf("¡Not enough memory for the matrix!");
+        return ((void **) 1);
+    }
+
+    for(i = 0; i < m; i++)
+    {
+        matrix[i] = (void *) malloc(n * size);
+        if(matrix[i] == NULL)
+        {
+            printf("¡Not enough memory for the matrix!");
+            return ((void **) 2);
+        }
+    }
+    return matrix;
+}
+
+void *malloc_vector(int n, size_t size)
+{
+    void *vector;
+
+    vector = (void *) malloc(n * size);
+    if(vector == NULL)
+    {
+        printf("¡Not enough memory for the vector!");
+        return ((void *) 1);
+    }
+
+    return vector;
+}
+
+void free_matrix(void **matrix, int m)
+{
+    int i;
+
+    for(i = 0; i < m; i++)
+        free(matrix[i]);
+    free(matrix);
+}
+
+/* Calculation orpeations */
+
 float prod_esc(int n, double *a, double*b)
 {
     int i;
@@ -46,7 +114,7 @@ double **prodMatMat(int m, int n, int k, double **a, double **b)
         if(c[i] == NULL)
         {
             printf("No hay espacio en memoria para la matriz C");
-            return 1;
+            return NULL;
         }
     }
 
@@ -77,14 +145,14 @@ int resoltrisup(int m, int n, double **a, double *x, double tol)
     /* Comprobamos que las dimensiones de la matriz sean correctas */
     if(n != m + 1)
     {
-        printf("\nNumero de filas y columnas incorrecto:\nn = m + 1");
+        printf("\nInvalid dimensions of the matrix:\nn = m + 1");
         return 1;
     }
     for(i = 0; i < m; i++)
     {
         if(fabs(a[i][i]) < tol)
         {
-            printf("\na[%d][%d]: %f < tolerancia: %f", i, i, a[i][i], tol);
+            printf("\na[%d][%d]: %f < tolerance: %f", i, i, a[i][i], tol);
             return 1;
         }
     }
@@ -108,14 +176,16 @@ int resoltrisup(int m, int n, double **a, double *x, double tol)
 void residu(int m, int n, double **a, double *x, double *r)
 {
     int i;
+    double *ax;
 
-    prodMatVec(m, n, a, x, r);
+    ax = malloc_vector(n, sizeof(double));
 
+    prodMatVec(m, n, a, x, ax);
 
     printf("\nVector Ax: [ ");
     for(i = 0; i < m; i++)
     {
-        printf("%lf ", r[i]);
+        printf("%lf ", ax[i]);
     }
     printf("]\n");
 
@@ -123,7 +193,7 @@ void residu(int m, int n, double **a, double *x, double *r)
     printf("\nVector residuo: [ ");
     for(i = 0; i < m; i++)
     {
-        r[i] = a[i][n - 1] - r[i];
+        r[i] = a[i][n - 1] - ax[i];
         printf("%lf ", r[i]);
     }
     printf("]\n");
@@ -146,6 +216,8 @@ int elimgauss(int m, int n, double **a, double tol)
             a[j][i] = factor;
         }
     }
+
+    return 0;
 }
 
 
@@ -160,7 +232,7 @@ int elimgausspiv(int m, int n, double **a, double tol)
         max = i;
         for(j = i + 1; j < m; j++)
         {
-            if(abs(a[j][i]) > abs(a[max][i]))
+            if(fabs(a[j][i]) > fabs(a[max][i]))
                 max = i;
         }
 
@@ -181,4 +253,6 @@ int elimgausspiv(int m, int n, double **a, double tol)
             a[j][i] = factor;
         }
     }
+
+    return 0;
 }
